@@ -1,0 +1,7 @@
+{
+  "dbhost": {
+    "url": "mongodb://localhost",
+    "port": "27017",
+    "db": "auth-test"
+  }
+}
