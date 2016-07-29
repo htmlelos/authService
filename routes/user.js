@@ -30,7 +30,7 @@ function postUser(request, response) {
   })
 }
 
-// GET /user/:userId - recupera un usuario dado su id
+// GET /user/:userId - recupera un usuario dado su userId
 function getUser(request, response) {
   User.findById(request.params.userId, (error, user) => {
     if (error) response.send(error)
@@ -40,10 +40,10 @@ function getUser(request, response) {
   })
 }
 
-// PUT /user/:userId - actualiza un usuario dado su id
+// PUT /user/:userId - actualiza un usuario dado su userId
 function updateUser(request, response) {
   User.findById({
-    _id: request.params.id
+    _id: request.params.userId
   }, (error, user) => {
     if (error) response.send(error)
 
@@ -58,10 +58,10 @@ function updateUser(request, response) {
   })
 }
 
-// DELETE /user/:userId - elimina un usuario dado su id
+// DELETE /user/:userId - elimina un usuario dado su userId
 function deleteUser(request, response) {
   User.remove({
-    _id: request.params.id
+    _id: request.params.userId
   }, (error, user) => {
     response.json({
       message: 'Usuario eliminado con exito',

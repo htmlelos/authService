@@ -50,11 +50,13 @@ app.get('/', (req, res) => res.json({
   message: 'API online...'
 }))
 
-app.route('/api/user')
+app.route('/users')
   .get(user.getUsers)
+
+app.route('/user')
   .post(user.postUser)
 
-app.route('/api/user/:userId')
+app.route('/user/:userId')
   .get(user.getUser)
   .delete(user.deleteUser)
   .put(user.updateUser)
