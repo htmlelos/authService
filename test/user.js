@@ -54,7 +54,7 @@ describe('Pruebas de Usuarios', () => {
       })
       it('no deberia crear un usuario sin password', done => {
         let user = {
-          username: 'admin',
+          username: 'admin@mail.com',
           status: 'ACTIVO'
         }
 
@@ -72,7 +72,7 @@ describe('Pruebas de Usuarios', () => {
       })
       it('no crear postear un usuario sin estado', done => {
         let user = {
-          username: 'admin',
+          username: 'admin@mail.com',
           password: 'admin'
         }
 
@@ -90,7 +90,7 @@ describe('Pruebas de Usuarios', () => {
       })
       it('deberia crear un usuario', done => {
         let user = {
-          username: 'admin',
+          username: 'admin@mail.com',
           password: 'admin',
           status: 'ACTIVO'
         }
@@ -116,38 +116,38 @@ describe('Pruebas de Usuarios', () => {
     })
     // GET /user/:userId - Obtener un usuario dado su id
   describe('GET /user/:userId', () => {
-    it('deberia obtener un usuario por su userId', done => {
-      let user = new User({
-        username: 'guest',
-        password: 'guest',
-        status: 'ACTIVO'
-      })
+      it('deberia obtener un usuario por su userId', done => {
+        let user = new User({
+          username: 'guest@mail.com',
+          password: 'guest',
+          status: 'ACTIVO'
+        })
 
-      user.save((error, user) => {
-        chai.request(server)
-          .get('/user/' + user._id)
-          .send(user)
-          .end((error, response) => {
-            response.should.have.status(200)
-            response.body.should.be.a('object')
-            response.body.should.have.property('username')
-            response.body.should.have.property('password')
-            response.body.should.have.property('status')
-            response.body.should.have.property('createdAt')
-            response.body.should.have.property('createdBy')
-            response.body.should.have.property('roles')
-            response.body.should.have.property('profiles')
-            response.body.should.have.property('_id').eql(user.id)
-            done()
-          })
+        user.save((error, user) => {
+          chai.request(server)
+            .get('/user/' + user._id)
+            .send(user)
+            .end((error, response) => {
+              response.should.have.status(200)
+              response.body.should.be.a('object')
+              response.body.should.have.property('username')
+              response.body.should.have.property('password')
+              response.body.should.have.property('status')
+              response.body.should.have.property('createdAt')
+              response.body.should.have.property('createdBy')
+              response.body.should.have.property('roles')
+              response.body.should.have.property('profiles')
+              response.body.should.have.property('_id').eql(user.id)
+              done()
+            })
+        })
       })
     })
-  })
-  // PUT /user/:userId - Actualizar un usuario por su id
+    // PUT /user/:userId - Actualizar un usuario por su id
   describe('PUT /user/:userId', () => {
     it('deberia actualizar un usuario por su userId', done => {
       let user = new User({
-        username: 'guest',
+        username: 'guest@mail.com',
         password: 'guest',
         status: 'ACTIVO'
       })
@@ -155,17 +155,23 @@ describe('Pruebas de Usuarios', () => {
       user.save((error, user) => {
         chai.request(server)
           .put('/user/' + user._id)
-          .send({username: 'operator', password: 'operator', status: 'INACTIVO'})
+          .send({
+            username: 'operator@mail.com',
+            password: 'operator',
+            status: 'INACTIVO'
+          })
           .end((error, response) => {
+            //console.log('RESPONSE: ', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario actualizado con exito')
-            response.body.user.should.have.property('username').eql('operator')
-            response.body.user.should.have.property('password').eql('operator')
+            response.body.user.should.have.property('username').eql('operator@mail.com')
+
+            //response.body.user.should.have.property('password').eql('operator')
             response.body.user.should.have.property('status').eql('INACTIVO')
-            //response.body.user.should.have.property('_id').eql(user._id)
+              //response.body.user.should.have.property('_id').eql(user._id)
             done()
-        })
+          })
       })
     })
   })
@@ -174,7 +180,7 @@ describe('Pruebas de Usuarios', () => {
   describe('DELETE /user/:userId', () => {
     it('deberia eliminar un usuario por su id', () => {
       let user = new User({
-        username: 'operator',
+        username: 'operator@mail.com',
         password: 'operator',
         status: 'ACTIVO'
       })
@@ -190,8 +196,57 @@ describe('Pruebas de Usuarios', () => {
             response.body.result.should.have.property('ok').eql(1)
             response.body.result.should.have.property('n').eql(1)
             done()
-        })
+          })
       })
+    })
+  })
+})
+
+describe('Encriptar password ', function () {
+  it('deberia retornar una contraseña encriptada asincronicamente', done => {
+    let password = 'secret'
+
+    User.hashPassword(password, function (error, passwordHash) {
+      // Confirmar que no existe el error
+      should.not.exist(error);
+      // Confirmar que la contraseña no es nula
+      /*console.log('passwordHash', passwordHash)*/
+      should.exist(passwordHash)
+      done()
+    })
+  })
+
+  it('deberia devolver verdadero si la contraseña es valida', done => {
+    var password = 'secret'
+
+    // Necesitamos encriptar la contraseña
+    User.hashPassword(password, function(error, passwordHash) {
+      // Comprobar que no existe el error
+      User.comparePasswordAndHash(password, passwordHash, function (error, areEqual) {
+        // Comprobar que no existe el error
+        should.not.exist(err)
+        // Comprobar que areEqual is true
+        areEqual.should.equal(true)
+        done()
+      })
+    })
+  })
+
+  it('deberia devolver falso si la contraseña es invalida', done => {
+    let password = 'secret'
+
+    User.hashPassword(password, function(error, passwordHash) {
+
+    var invalidPassword = 'imahacker'
+
+    // Necesitamos crear una encriptacion de la contraseña
+    User.comparePasswordAndHash(invalidPassword, passwordHash, function (error, areEqual) {
+      // Comprobar que error no existe
+      should.not.exist(err)
+      // Confirmar que areEqual es false
+      areEqual.should.equal(false)
+      done()
+    })
     })
   })
 })

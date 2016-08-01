@@ -1,5 +1,8 @@
 let mongoose = require('mongoose')
+let bcrypt = require('bcrypt-node')
 let Schema = mongoose.Schema
+
+let SALT_WORK_FACTOR = 9;
 
 // Establece las promesas de mongoose a las promesas nativas de javascript
 mongoose.Promise = global.Promise;
@@ -48,30 +51,29 @@ let UserSchema = new Schema({
   versionKey: false
 })
 
+UserSchema.statics.hashPassword = function (password, next) {
+  // Para acelerar los test, verificamos NODE_ENV
+  // Si estamos realizando test, establecemos el costo SALT_WORK_FACTOR = 1
+  if (process.env.NODE_ENV === 'test') {
+    SALT_WORK_FACTOR = 1
+  }
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(error, salt) {
+    // Encriptar la contraseña utilizando bcrypt; pasa la funcion
+    // callback `next`a bcrypt.hash()
+/*    console.log('SALT', salt)*/
+    bcrypt.hash(password, salt, function() {},next)
+  });
+/*  console.log('TEST HASH', SALT_WORK_FACTOR);  */
+}
 
-/*UserSchema.statics.authenticate = function (email, password, callback()) {
-  this
-    .findOne({username: username})
-    .select('password salt')
-    .exec((error, user) => {
-    if (error) {
-      return callback(error, null)
-    }
-    // Si no se encontro usuario solo devolver el usuario vacio
-    if (!user) {
-      return callback(error, user)
-    }
-  })
-}*/
+UserSchema.statics.comparePasswordAndHash = function (password, passwordHash, next) {
+  // compara las contraseñas proporcionadas
+  bcrypt.compare(password, passwordHash, next)
+}
 
-// Validacion especifica de un campo
-/*UserSchema.path('username').validate(function (username) {
-   var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-   return emailRegex.test(username); // Assuming email has a text attribute
-}, 'The e-mail field cannot be empty.')*/
+UserSchema.pre('save', function(next) {
+  let user = this
 
-// Establece el valor de createdAt con el momento actual
-UserSchema.pre('save', next => {
   now = new Date()
   // Se asigna la fecha actual al
   if (!this.createdAt) {
@@ -81,7 +83,25 @@ UserSchema.pre('save', next => {
   if (!this.createdBy) {
     this.createdBy = 'anonimo'
   }
-  next()
+  // Solo encriptar el password si se ha modificado la contraseña o es un nuevo usuario
+
+  if (!user.isModified()) return next();
+  // Generar una nueva salt
+
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(error, salt) {
+    if (error) return next(error);
+
+    // Encriptar el usuario junto a la nueva salt
+
+    bcrypt.hash(user.password, salt, function() {
+    },function(err, hash) {
+      if (err) return next(err);
+
+      // sobreescribe la contraseña en texto plano con la contraseña encriptada
+      user.password = hash;
+      next();
+    })
+  })
 })
 
 // Exporta el Usuario para que pueda ser utilizado por el servicio
