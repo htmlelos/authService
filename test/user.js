@@ -161,14 +161,12 @@ describe('Pruebas de Usuarios', () => {
             status: 'INACTIVO'
           })
           .end((error, response) => {
-            //console.log('RESPONSE: ', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario actualizado con exito')
             response.body.user.should.have.property('username').eql('operator@mail.com')
               // La contraseña generada es igual a la contraseña almacenada
 
-            /*console.log('#HASHED#', user.password)*/
             User.comparePasswordAndHash('operator', user.password, function (error, areEqual) {
               // Comprobar que no existe un error
               should.not.exist(error)
@@ -185,7 +183,7 @@ describe('Pruebas de Usuarios', () => {
 
   // DELETE /user/:userId - Eliminar un usuario por su id
   describe('DELETE /user/:userId', () => {
-    it('deberia eliminar un usuario por su id', () => {
+    it('deberia eliminar un usuario por su id', done => {
       let user = new User({
         username: 'operator@mail.com',
         password: 'operator',
@@ -197,37 +195,55 @@ describe('Pruebas de Usuarios', () => {
           .delete('/user/' + user._id)
           .send(user)
           .end((error, response) => {
+            console.log('RESPONSE', response.body)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario eliminado con exito')
-            response.body.result.should.have.property('ok').eql(1)
-            response.body.result.should.have.property('n').eql(1)
+            response.body.shoud.have.property('user')
+            response.body.user.should.have.property('ok').eql(1)
+            response.body.user.should.have.property('n').eql(1)
             done()
           })
       })
     })
   })
-
-/*  describe('deberia autenticar un usuario', () => {
-    it('el usuario es valido', done => {
-      let user = new User({
-        username: 'admin@mail.com',
-        password: 'admin',
-        status: 'ACTIVO'
-      })
+  // POST /login - Autenticar usuario
+  describe('Autenticar un usuario', () => {
+    it('deberia Autenticar si la contraseña es valida ', done => {
+      let credentials = {
+        username: 'operator@mail.com',
+        password: 'operator'
+      }
 
       chai.request(server)
         .post('/login')
-        .send({
-          username: 'admin@mail.com',
-          password: 'admin'
-        })
+        .send(credentials)
         .end((error, response) => {
           response.should.have.status(200)
           response.body.should.be.a('object')
           response.body.should.have.property('message').eql('Usuario autenticado con exito')
-          response.body.should.have.property('isAuthententicated').eql(true)
-        })
+          response.body.should.have.property('isAuthenticated').eql(true)
+          done()
+      })
+    })
+  })
+
+/*  describe('Authenticar un usuario', () => {
+    it('no deberia autenticar si la contrasela es invalida', done => {
+      let credentials = {
+        username: 'operator@mail',
+        password: 'admin'
+      }
+
+      chai.request(server)
+        .post('/login')
+        .send(credentials)
+        .end((error, response) => {
+          response.should.have.status(401)
+          response.body.should.be.a('object')
+          response.body.should.have.property('message').eql('Por favor verifique sus datos, usuario o contraseña invalida')
+          response.body.should.have.property('isAuthenticated').eql(false)
+      })
     })
   })*/
 })

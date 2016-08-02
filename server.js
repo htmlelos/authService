@@ -6,6 +6,8 @@ let bodyParser = require('body-parser')
 let port = "3000"
 let user = require('./routes/user')
 let config = require('config')
+/*let expressValidator = require('express-validator')*/
+let path = require('path')
   // Configuracion de la base de datos
 let options = {
     server: {
@@ -45,6 +47,7 @@ app.use(bodyParser.text())
 app.use(bodyParser.json({
   type: 'applicacion/json'
 }))
+/*app.use(expressValidator)*/
 
 app.get('/', (req, res) => res.json({
   message: 'API online...'

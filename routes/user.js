@@ -72,13 +72,35 @@ function deleteUser(request, response) {
 
 // POST /login - autenticar un usuario
 function login(request, response) {
+
+  let isAuthenticated = false
+
   User.findOne({
-    username: request.params.username
+    username: request.body.username
   }, (error, user) => {
-    response.status(200).json({
-      message: 'Usuario autenticado con exito',
-      isAuthenticated: true
-    })
+    console.log('USER: ', user);
+
+    if (user) {
+      User.comparePasswordAndHash(request.body.password, user.password, function (error, areEqual) {
+        //
+        console.log('IGUALES', areEqual)
+        isAuthenticated = areEqual
+      })
+
+      console.log('isAuthenticated?', isAuthenticated)
+
+      if (user.status === 'ACTIVO' && isAuthenticated) {
+        response.status(200).json({
+          message: 'Usuario autenticado con exito',
+          isAuthenticated: isAuthenticated
+        })
+      } else {
+        response.status(401).json({
+          message: 'Usuario invalido o contraseña incorrecta',
+          isAuthenticated: false
+        });
+      }
+    }
   })
 }
 
