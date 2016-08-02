@@ -61,6 +61,9 @@ app.route('/user/:userId')
   .delete(user.deleteUser)
   .put(user.updateUser)
 
+app.route('/login')
+  .post(user.login)
+
 app.listen(port, function () {
   console.log('Servicio ejecutandose en el puerto: ' + port);
 })

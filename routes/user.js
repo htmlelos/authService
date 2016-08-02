@@ -70,7 +70,19 @@ function deleteUser(request, response) {
   })
 }
 
+// POST /login - autenticar un usuario
+function login(request, response) {
+  User.findOne({
+    username: request.params.username
+  }, (error, user) => {
+    response.status(200).json({
+      message: 'Usuario autenticado con exito',
+      isAuthenticated: true
+    })
+  })
+}
+
 // Exporta todas las funciones
 module.exports = {
-  getUsers, postUser, getUser, updateUser, deleteUser
+  getUsers, postUser, getUser, updateUser, deleteUser, login
 }
