@@ -22,7 +22,10 @@ let UserSchema = new Schema({
   },
   status: {
     type: String,
-    enum: {values: ['ACTIVO', 'INACTIVO'], message: 'el estado solo puede ser ACTIVO o INACTIVO'},
+    enum: {
+      values: ['ACTIVO', 'INACTIVO'],
+      message: 'el estado solo puede ser ACTIVO o INACTIVO'
+    },
     required: 'El estado del usuario no ha sido definido y es un campo obligatorio'
   },
   roles: {
@@ -57,13 +60,11 @@ UserSchema.statics.hashPassword = function (password, next) {
   if (process.env.NODE_ENV === 'test') {
     SALT_WORK_FACTOR = 1
   }
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(error, salt) {
+  bcrypt.genSalt(SALT_WORK_FACTOR, function (error, salt) {
     // Encriptar la contraseña utilizando bcrypt; pasa la funcion
     // callback `next`a bcrypt.hash()
-/*    console.log('SALT', salt)*/
-    bcrypt.hash(password, salt, function() {},next)
+    bcrypt.hash(password, salt, function () {}, next)
   });
-/*  console.log('TEST HASH', SALT_WORK_FACTOR);  */
 }
 
 UserSchema.statics.comparePasswordAndHash = function (password, passwordHash, next) {
@@ -71,15 +72,15 @@ UserSchema.statics.comparePasswordAndHash = function (password, passwordHash, ne
   bcrypt.compare(password, passwordHash, next)
 }
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   let user = this
 
   now = new Date()
-  // Se asigna la fecha actual al
+    // Se asigna la fecha actual al
   if (!this.createdAt) {
     this.createdAt = now
   }
-  // Se asina el usuario por omisión
+  // Se asigna el usuario por omisión
   if (!this.createdBy) {
     this.createdBy = 'anonimo'
   }
@@ -88,13 +89,12 @@ UserSchema.pre('save', function(next) {
   if (!user.isModified()) return next();
   // Generar una nueva salt
 
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(error, salt) {
+  bcrypt.genSalt(SALT_WORK_FACTOR, function (error, salt) {
     if (error) return next(error);
 
     // Encriptar el usuario junto a la nueva salt
 
-    bcrypt.hash(user.password, salt, function() {
-    },function(err, hash) {
+    bcrypt.hash(user.password, salt, function () {}, function (err, hash) {
       if (err) return next(err);
 
       // sobreescribe la contraseña en texto plano con la contraseña encriptada
