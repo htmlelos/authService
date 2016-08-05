@@ -5,7 +5,7 @@ let Schema = mongoose.Schema
 let SALT_WORK_FACTOR = 9;
 
 // Establece las promesas de mongoose a las promesas nativas de javascript
-mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise
 
 let match = [/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'El username debe se un correo electronico por ejemplo "username@servidor.com"']
 
@@ -13,20 +13,21 @@ let match = [/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, 'El username debe se un corr
 let UserSchema = new Schema({
   username: {
     type: String,
-    required: 'El nombre de usuario no ha sido definido y es un campo obligatorio',
-    match: match
+    required: 'El nombre de usuario no ha sido definido y es un dato obligatorio',
+    match: match,
+    unique: true
   },
   password: {
     type: String,
-    required: 'La contraseña no ha sido definida y es un campo obligatorio'
+    required: 'La contraseña no ha sido definida y es un dato obligatorio'
   },
   status: {
     type: String,
     enum: {
       values: ['ACTIVO', 'INACTIVO'],
-      message: 'el estado solo puede ser ACTIVO o INACTIVO'
+      message: 'El estado solo puede ser ACTIVO o INACTIVO'
     },
-    required: 'El estado del usuario no ha sido definido y es un campo obligatorio'
+    required: 'El estado del usuario no ha sido definido y es un dato obligatorio'
   },
   roles: {
     type: Array
@@ -104,5 +105,5 @@ UserSchema.pre('save', function (next) {
   })
 })
 
-// Exporta el Usuario para que pueda ser utilizado por el servicio
+// Exporta el Usuario para que pueda ser utilizado en el servicio
 module.exports = mongoose.model('user', UserSchema)

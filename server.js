@@ -4,9 +4,10 @@ let mongoose = require('mongoose')
 let morgan = require('morgan')
 let bodyParser = require('body-parser')
 let port = "3000"
+  /*let user = require('./controllers/user')*/
 let user = require('./routes/user')
 let config = require('config')
-/*let expressValidator = require('express-validator')*/
+  /*let expressValidator = require('express-validator')*/
 let path = require('path')
   // Configuracion de la base de datos
 let options = {
@@ -45,15 +46,17 @@ app.use(bodyParser.urlencoded({
 }))
 app.use(bodyParser.text())
 app.use(bodyParser.json({
-  type: 'applicacion/json'
-}))
-/*app.use(expressValidator)*/
+    type: 'applicacion/json'
+  }))
+  /*app.use(expressValidator)*/
 
 app.get('/', (req, res) => res.json({
   message: 'API online...'
 }))
 
-app.route('/users')
+app.use('/', user)
+
+/*app.route('/users')
   .get(user.getUsers)
 
 app.route('/user')
@@ -69,7 +72,7 @@ app.route('/login')
 
 app.listen(port, function () {
   console.log('Servicio ejecutandose en el puerto: ' + port);
-})
+})*/
 
 // Para el testing
 module.exports = app
