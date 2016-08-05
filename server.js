@@ -6,6 +6,7 @@ let bodyParser = require('body-parser')
 let port = "3000"
   /*let user = require('./controllers/user')*/
 let user = require('./routes/user')
+let role = require('./routes/role')
 let config = require('config')
   /*let expressValidator = require('express-validator')*/
 let path = require('path')
@@ -48,31 +49,13 @@ app.use(bodyParser.text())
 app.use(bodyParser.json({
     type: 'applicacion/json'
   }))
-  /*app.use(expressValidator)*/
 
 app.get('/', (req, res) => res.json({
   message: 'API online...'
 }))
-
+// Rutas de usuarios
 app.use('/', user)
-
-/*app.route('/users')
-  .get(user.getUsers)
-
-app.route('/user')
-  .post(user.postUser)
-
-app.route('/user/:userId')
-  .get(user.getUser)
-  .delete(user.deleteUser)
-  .put(user.updateUser)
-
-app.route('/login')
-  .post(user.login)
-
-app.listen(port, function () {
-  console.log('Servicio ejecutandose en el puerto: ' + port);
-})*/
+app.use('/', role)
 
 // Para el testing
 module.exports = app

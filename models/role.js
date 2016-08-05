@@ -7,12 +7,12 @@ mongoose.Promise = global.Promises
 let RoleSchema = new Schema({
   name: {
     type: String,
-    required: 'El nombre de rol no ha sido definido y es un dato obligatorio',
+    required: 'Debe proporcionar un nombre de usuario',
     unique: true
   },
   description: {
     type: String,
-    required: 'La descripcion del rol no se ha definido y es un dato obligatorio'
+    required: 'Debe proporcionar una descripcion del usuario'
   },
   status: {
     type: String,
@@ -20,7 +20,7 @@ let RoleSchema = new Schema({
       values: ['ACTIVO', 'INACTIVO'],
       message: 'El estado solo puede ser ACTIVO o INACTIVO'
     },
-    required: 'El estado del rol no ha sido definido y es un dato obligatorio'
+    required: 'Debe definir el estado del usuario'
   },
   createdAt: {
     type: Date,

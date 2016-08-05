@@ -15,7 +15,7 @@ describe('Pruebas de Usuarios', () => {
   beforeEach(done => {
     User.remove({}, err => {
       done()
-    });
+    })
   })
 
   // GET /users - obtener todos los usuarios
