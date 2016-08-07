@@ -230,7 +230,7 @@ describe('Pruebas de Usuarios', () => {
           .post('/user')
           .send(user)
           .end((error, response) => {
-            // console.log('RESPONSE', response)
+            console.log('RESPONSE', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario creado con exito')
@@ -266,6 +266,7 @@ describe('Pruebas de Usuarios', () => {
           .post('/user')
           .send(user)
           .end((error, response) => {
+            // console.log('RESPONSE: ', response);
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario creado con exito')
@@ -286,14 +287,14 @@ describe('Pruebas de Usuarios', () => {
 
     it('deberia Autenticar si el estado del usuario esta INACTIVO', done => {
       let user = new User({
-        username: 'operator@mail.com',
-        password: 'operator',
+        username: 'manager@mail.com',
+        password: 'manager',
         status: 'INACTIVO'
       })
 
       let credentials = {
-        username: 'operator@mail.com',
-        password: 'operator'
+        username: 'manager@mail.com',
+        password: 'manager'
       }
 
       user.save((error, user) => {
@@ -301,6 +302,7 @@ describe('Pruebas de Usuarios', () => {
           .post('/user')
           .send(user)
           .end((error, response) => {
+            console.log('RESONSE: ', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario creado con exito')

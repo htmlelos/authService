@@ -7,6 +7,7 @@ let port = "3000"
   /*let user = require('./controllers/user')*/
 let user = require('./routes/user')
 let role = require('./routes/role')
+let profile = require('./routes/profile')
 let config = require('config')
   /*let expressValidator = require('express-validator')*/
 let path = require('path')
@@ -58,6 +59,7 @@ app.get('/', (req, res) => res.json({
 // Rutas de usuarios
 app.use('/', user)
 app.use('/', role)
+app.use('/', profile)
 
 app.listen(port, function () {
   console.log('Servicio ejecutandose en el puerto: ' + port);
