@@ -25,6 +25,8 @@ let options = {
       }
     }
   }
+// Default type promises
+mongoose.Promise = global.Promise
   // Coneccion a la base de datos
 mongoose.connect(config.dbhost.url + ':' + config.dbhost.port + '/' + config.dbhost.db, options)
 
@@ -56,6 +58,10 @@ app.get('/', (req, res) => res.json({
 // Rutas de usuarios
 app.use('/', user)
 app.use('/', role)
+
+app.listen(port, function () {
+  console.log('Servicio ejecutandose en el puerto: ' + port);
+})
 
 // Para el testing
 module.exports = app

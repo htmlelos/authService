@@ -8,11 +8,10 @@ router.route('/roles')
 router.route('/role')
   .post(role.postRole)
 
-/*
+
 router.route('/role/:roleId')
   .get(role.getRole)
-  .delete(role.deleteRole)
   .put(role.updateRole)
-*/
+  .delete(role.deleteRole)
 
 module.exports = router

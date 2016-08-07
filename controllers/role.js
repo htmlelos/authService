@@ -31,7 +31,45 @@ function postRole(request, response) {
 }
 
 // GET /role/:roleId - recupera un rol dado su roleId
+function getRole(request, response) {
+  Role.findById(request.params.roleId, (error, role) => {
+    if (error) response.send(error)
+
+    // Si no hay errores, devuelve el rol al cliente
+    response.json(role)
+  })
+}
+
+// PUT /role/:roleId - actualiza un rol dado su id
+function updateRole(request, response) {
+  Role.findById({
+    _id: request.params.roleId
+  }, (error, role) => {
+    if (error) response.send(error)
+
+    Object.assign(role, request.body).save((error, role) => {
+      if (error) response.send(error)
+
+      response.json({
+        message: 'Rol actualizado con exito',
+        role
+      })
+    })
+  })
+}
+
+// DELETE /role/:roleId - elimina un rol dado su id
+function deleteRole(request, response) {
+    Role.remove({
+      _id: request.params.roleId
+    }, (error, role) => {
+      response.json({
+        message: 'Rol eliminado con exito',
+        role
+      })
+    })
+}
 
 module.exports = {
-  getRoles, postRole
+  getRoles, postRole, getRole, updateRole, deleteRole
 }

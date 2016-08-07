@@ -166,7 +166,6 @@ describe('Pruebas de Usuarios', () => {
             response.body.should.have.property('message').eql('Usuario actualizado con exito')
             response.body.user.should.have.property('username').eql('operator@mail.com')
               // La contraseña generada es igual a la contraseña almacenada
-
             User.comparePasswordAndHash('operator', user.password, function (error, areEqual) {
               // Comprobar que no existe un error
               should.not.exist(error)
@@ -195,7 +194,6 @@ describe('Pruebas de Usuarios', () => {
             .delete('/user/' + user._id)
             .send(user)
             .end((error, response) => {
-              /*console.log('RESPONSE', response)*/
               response.should.have.status(200)
               response.body.should.be.a('object')
               response.body.should.have.property('message').eql('Usuario eliminado con exito')
@@ -209,6 +207,12 @@ describe('Pruebas de Usuarios', () => {
     })
     // POST /login - Autenticar usuario
   describe('Autenticar usuario', () => {
+    beforeEach(done => {
+      User.remove({}, err => {
+        done()
+      })
+    })
+
     it('deberia Autenticar si la contraseña es valida ', done => {
       let user = new User({
         username: 'operator@mail.com',
@@ -226,6 +230,7 @@ describe('Pruebas de Usuarios', () => {
           .post('/user')
           .send(user)
           .end((error, response) => {
+            // console.log('RESPONSE', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario creado con exito')
