@@ -8,7 +8,6 @@ router.route('/roles')
 router.route('/role')
   .post(role.postRole)
 
-
 router.route('/role/:roleId')
   .get(role.getRole)
   .put(role.updateRole)
