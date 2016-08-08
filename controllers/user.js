@@ -23,10 +23,12 @@ function postUser(request, response) {
             // Si es un usuario duplicado
             if (error && error.code == 11000)
                 response.json({
-                  message: 'Usuario duplicado',
-                  error
+                    message: 'Usuario duplicado',
+                    error
                 })
-            response.send(error)
+            else {
+                response.send(error)
+            }
         } else {
             response.json({
                 message: 'Usuario creado con exito',
