@@ -90,6 +90,30 @@ describe('Pruebas de Roles', () => {
           done()
         })
     })
+
+    it('deberia crear un rol', done => {
+      let role = {
+        name: 'admin_role',
+        description: 'El usuario tiene permisos de administrador',
+        status: 'ACTIVO'
+      }
+
+      chai.request(server)
+        .post('/role')
+        .send(role)
+        .end((error, response) => {
+          response.should.have.status(200)
+          response.body.should.be.a('object')
+          response.body.should.have.property('message').eql('Rol creado con exito')
+          response.body.role.should.have.property('_id')
+          response.body.role.should.have.property('name')
+          response.body.role.should.have.property('description')
+          response.body.role.should.have.property('status')
+          response.body.role.should.have.property('createdAt')
+          response.body.role.should.have.property('createdBy')
+          done()
+        })
+    })
   })
 
   // GET /role/:roleId - Obtener un rol por dado su id
@@ -137,7 +161,7 @@ describe('Pruebas de Roles', () => {
             status: 'ACTIVO'
           })
           .end((error, response) => {
-            // console.log('RESPONSE: ', response)            
+            // console.log('RESPONSE: ', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Rol actualizado con exito')

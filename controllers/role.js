@@ -22,7 +22,7 @@ function postRole(request, response) {
     // Crea un nuevo Rol
     function respondCreated(response, role) {
         response.json({
-            message: 'Role creado con exito',
+            message: 'Rol creado con exito',
             role
         })
     }
