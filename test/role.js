@@ -137,6 +137,7 @@ describe('Pruebas de Roles', () => {
             status: 'ACTIVO'
           })
           .end((error, response) => {
+            // console.log('RESPONSE: ', response)            
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Rol actualizado con exito')
