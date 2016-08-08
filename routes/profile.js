@@ -10,5 +10,6 @@ router.route('/profile')
 
 router.route('/profile/:profileId')
   .get(profile.getProfile)
+  .put(profile.updateProfile)
 
 module.exports = router

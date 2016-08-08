@@ -149,7 +149,7 @@ describe('Pruebas de Usuarios', () => {
       let user = new User({
         username: 'guest@mail.com',
         password: 'guest',
-        status: 'ACTIVO'
+        status: 'INACTIVO'
       })
 
       user.save((error, user) => {
@@ -158,7 +158,7 @@ describe('Pruebas de Usuarios', () => {
           .send({
             username: 'operator@mail.com',
             password: 'operator',
-            status: 'INACTIVO'
+            status: 'ACTIVO'
           })
           .end((error, response) => {
             response.should.have.status(200)
@@ -166,13 +166,13 @@ describe('Pruebas de Usuarios', () => {
             response.body.should.have.property('message').eql('Usuario actualizado con exito')
             response.body.user.should.have.property('username').eql('operator@mail.com')
               // La contraseña generada es igual a la contraseña almacenada
-            User.comparePasswordAndHash('operator', user.password, function (error, areEqual) {
+            User.comparePasswordAndHash('operator', user.password, function(error, areEqual) {
               // Comprobar que no existe un error
               should.not.exist(error)
                 // Comprobar si son iguales
               areEqual.should.equal(true)
             })
-            response.body.user.should.have.property('status').eql('INACTIVO')
+            response.body.user.should.have.property('status').eql('ACTIVO')
               //response.body.user.should.have.property('_id').eql(user._id)
             done()
           })
@@ -230,7 +230,6 @@ describe('Pruebas de Usuarios', () => {
           .post('/user')
           .send(user)
           .end((error, response) => {
-            console.log('RESPONSE', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario creado con exito')
@@ -241,6 +240,7 @@ describe('Pruebas de Usuarios', () => {
         .post('/login')
         .send(credentials)
         .end((error, response) => {
+          // console.log('RESPONSE2', response)
           response.should.have.status(200)
           response.body.should.be.a('object')
           response.body.should.have.property('message').eql('Usuario autenticado con exito')
@@ -285,7 +285,7 @@ describe('Pruebas de Usuarios', () => {
         })
     })
 
-    it('deberia Autenticar si el estado del usuario esta INACTIVO', done => {
+    it('no deberia Autenticar si el estado del usuario esta INACTIVO', done => {
       let user = new User({
         username: 'manager@mail.com',
         password: 'manager',
@@ -302,7 +302,6 @@ describe('Pruebas de Usuarios', () => {
           .post('/user')
           .send(user)
           .end((error, response) => {
-            console.log('RESONSE: ', response)
             response.should.have.status(200)
             response.body.should.be.a('object')
             response.body.should.have.property('message').eql('Usuario creado con exito')
@@ -313,6 +312,7 @@ describe('Pruebas de Usuarios', () => {
         .post('/login')
         .send(credentials)
         .end((error, response) => {
+          // console.log('RESPONSE: ', response)
           response.should.have.status(401)
           response.body.should.be.a('object')
           response.body.should.have.property('message').eql('Usuario invalido o contraseña incorrecta')
@@ -327,7 +327,7 @@ describe('Encriptar contraseñas ', () => {
   it('deberia retornar una contraseña encriptada asincronicamente', done => {
     let password = 'secret'
 
-    User.hashPassword(password, function (error, passwordHash) {
+    User.hashPassword(password, function(error, passwordHash) {
       // Confirmar que no existe el error
       should.not.exist(error);
       // Confirmar que la contraseña no es nula
@@ -340,8 +340,8 @@ describe('Encriptar contraseñas ', () => {
     var password = 'secret'
 
     // Necesitamos encriptar la contraseña
-    User.hashPassword(password, function (error, passwordHash) {
-      User.comparePasswordAndHash(password, passwordHash, function (error, areEqual) {
+    User.hashPassword(password, function(error, passwordHash) {
+      User.comparePasswordAndHash(password, passwordHash, function(error, areEqual) {
         // Comprobar que no existe el error
         should.not.exist(error)
           // Comprobar que areEqual is true
@@ -354,12 +354,12 @@ describe('Encriptar contraseñas ', () => {
   it('deberia devolver falso si la contraseña es invalida', done => {
     let password = 'secret'
 
-    User.hashPassword(password, function (error, passwordHash) {
+    User.hashPassword(password, function(error, passwordHash) {
 
       var invalidPassword = 'imahacker'
 
       // Necesitamos crear una encriptacion de la contraseña
-      User.comparePasswordAndHash(invalidPassword, passwordHash, function (error, areEqual) {
+      User.comparePasswordAndHash(invalidPassword, passwordHash, function(error, areEqual) {
         // Comprobar que error no existe
         should.not.exist(error)
           // Confirmar que areEqual es false

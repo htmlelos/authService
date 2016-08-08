@@ -18,7 +18,7 @@ function getProfiles(request, response) {
 function postProfile(request, response) {
   // Crea un nuevo Perfil
   var newProfile = new Profile(request.body)
-  // Lo persiste en la base de datos
+    // Lo persiste en la base de datos
   newProfile.save((error, profile) => {
     if (error) {
       response.send(error)
@@ -31,15 +31,36 @@ function postProfile(request, response) {
   })
 }
 
-// GET /role/:profileId - recupera el perfil dado su profileId
+// GET /profile/:profileId - recupera el perfil dado su profileId
 function getProfile(request, response) {
   Profile.findById(request.params.profileId, (error, profile) => {
     if (error) response.send(error)
-    // Si no hay errores, devuelve el perfil al cliente
+      // Si no hay errores, devuelve el perfil al cliente
     response.json(profile)
   })
 }
 
+// PUT /profile/:profileId - actualiza un perfil por su profileId
+function updateProfile(request, response) {
+  Profile.findById({
+    _id: request.params.profileId
+  }, (error, profile) => {
+    if (error) response.send(error)
+
+    Object.assign(profile, request.body).save((error, profile) => {
+      if (error) response.send(error)
+
+      response.json({
+        message: 'Perfil actualizado con exito',
+        profile
+      })
+    })
+  })
+}
+
 module.exports = {
-  getProfiles, postProfile, getProfile
+  getProfiles,
+  postProfile,
+  getProfile,
+  updateProfile
 }
