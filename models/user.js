@@ -1,6 +1,8 @@
 let mongoose = require('mongoose')
 let bcrypt = require('bcrypt-node')
 let Schema = mongoose.Schema
+let Role = require('../models/role')
+let Profile = require('../models/profile')
 
 let SALT_WORK_FACTOR = 9;
 
@@ -29,12 +31,8 @@ let UserSchema = new Schema({
         },
         required: 'El estado del usuario no ha sido definido y es un dato obligatorio'
     },
-    roles: {
-        type: Array
-    },
-    profiles: {
-        type: Array
-    },
+    roles: [{type: mongoose.Schema.ObjectId, ref: 'Role'}],
+    profiles: [{type: mongoose.Schema.ObjectId, ref: 'Profile'}],
     createdAt: {
         type: Date,
         required: true,

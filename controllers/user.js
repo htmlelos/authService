@@ -143,6 +143,20 @@ function login(request, response) {
       .catch(error => respondError(response, error))
 }
 
+function getRoles(request, response) {
+  function respondOk(response, user) {
+    response.json(user.roles)
+  }
+
+  function respondError(response, error) {
+    response.send(error)
+  }
+
+    User.findById(request.params.userId)
+      .then(user => respondOk(response, user))
+      .catch(error => respondError(response, error))
+}
+
 // Exporta todas las funciones
 module.exports = {
     getUsers,
@@ -150,5 +164,6 @@ module.exports = {
     getUser,
     updateUser,
     deleteUser,
-    login
+    login,
+    getRoles
 }
