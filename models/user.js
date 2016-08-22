@@ -29,12 +29,14 @@ let UserSchema = new Schema({
         },
         required: 'El estado del usuario no ha sido definido y es un dato obligatorio'
     },
-    roles: {
-        type: Array
-    },
-    profiles: {
-        type: Array
-    },
+    roles: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Role'
+    }],
+    profiles: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Profile'
+    }],
     createdAt: {
         type: Date,
         required: true,
