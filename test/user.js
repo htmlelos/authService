@@ -3,6 +3,7 @@ process.env.NODE_ENV = 'test'
 
 let mongoose = require('mongoose')
 let User = require('../models/user')
+let Role = require('../models/role')
   // Dependencias de desarrollo
 let chai = require('chai')
 let chaiHttp = require('chai-http')
@@ -34,87 +35,123 @@ describe('Pruebas de Usuarios', () => {
 
   // POST /user - crear un nuevo usuario
   describe('POST /user', () => {
-      it('no deberia crear un usuario sin nombre de usuario', done => {
-        let user = {
-          password: 'admin',
-          status: 'ACTIVO'
-        }
+    it('no deberia crear un usuario sin nombre de usuario', done => {
+      let user = {
+        password: 'admin',
+        status: 'ACTIVO'
+      }
 
-        chai.request(server)
-          .post('/user')
-          .send(user)
-          .end((error, response) => {
-            response.should.have.status(200)
-            response.body.should.be.a('object')
-            response.body.should.have.property('errors')
-            response.body.errors.should.have.property('username')
-            response.body.errors.username.should.have.property('kind').eql('required')
-            done()
-          })
+      chai.request(server)
+        .post('/user')
+        .send(user)
+        .end((error, response) => {
+          response.should.have.status(200)
+          response.body.should.be.a('object')
+          response.body.should.have.property('errors')
+          response.body.errors.should.have.property('username')
+          response.body.errors.username.should.have.property('kind').eql('required')
+          done()
+        })
+    })
+    it('no deberia crear un usuario sin password', done => {
+      let user = {
+        username: 'admin@mail.com',
+        status: 'ACTIVO'
+      }
+
+      chai.request(server)
+        .post('/user')
+        .send(user)
+        .end((error, response) => {
+          response.should.have.status(200)
+          response.body.should.be.a('object')
+          response.body.should.have.property('errors')
+          response.body.errors.should.have.property('password')
+          response.body.errors.password.should.have.property('kind').eql('required')
+          done()
+        })
+    })
+    it('no crear postear un usuario sin estado', done => {
+      let user = {
+        username: 'admin@mail.com',
+        password: 'admin'
+      }
+
+      chai.request(server)
+        .post('/user')
+        .send(user)
+        .end((error, response) => {
+          response.should.have.status(200)
+          response.body.should.be.a('object')
+          response.body.should.have.property('errors')
+          response.body.errors.should.have.property('status')
+          response.body.errors.status.should.have.property('kind').eql('required')
+          done()
+        })
+    })
+    it('deberia crear un usuario', done => {
+      let user = {
+        username: 'admin@mail.com',
+        password: 'admin',
+        status: 'ACTIVO'
+      }
+
+      chai.request(server)
+        .post('/user')
+        .send(user)
+        .end((error, response) => {
+          response.should.have.status(200)
+          response.body.should.be.a('object')
+          response.body.should.have.property('message').eql('Usuario creado con exito')
+          response.body.user.should.have.property('_id')
+          response.body.user.should.have.property('username')
+          response.body.user.should.have.property('password')
+          response.body.user.should.have.property('status')
+          response.body.user.should.have.property('createdAt')
+          response.body.user.should.have.property('createdBy')
+          response.body.user.should.have.property('roles')
+          response.body.user.should.have.property('profiles')
+          done()
+        })
+    })
+  })
+
+  describe('POST /user/:userId/role', () => {
+    it('deberia asignar un rol a un usuario', done => {
+      let user = new User({
+        username: 'admin@mail.com',
+        password: 'admin',
+        status: 'ACTIVO'
       })
-      it('no deberia crear un usuario sin password', done => {
-        let user = {
-          username: 'admin@mail.com',
-          status: 'ACTIVO'
-        }
 
-        chai.request(server)
-          .post('/user')
-          .send(user)
-          .end((error, response) => {
-            response.should.have.status(200)
-            response.body.should.be.a('object')
-            response.body.should.have.property('errors')
-            response.body.errors.should.have.property('password')
-            response.body.errors.password.should.have.property('kind').eql('required')
-            done()
-          })
+      let role = new Role({
+        name: 'admin_role',
+        description: 'El usuario tiene permisos de administrador',
+        status: 'ACTIVO'
       })
-      it('no crear postear un usuario sin estado', done => {
-        let user = {
-          username: 'admin@mail.com',
-          password: 'admin'
-        }
 
-        chai.request(server)
-          .post('/user')
-          .send(user)
-          .end((error, response) => {
-            response.should.have.status(200)
-            response.body.should.be.a('object')
-            response.body.should.have.property('errors')
-            response.body.errors.should.have.property('status')
-            response.body.errors.status.should.have.property('kind').eql('required')
-            done()
-          })
-      })
-      it('deberia crear un usuario', done => {
-        let user = {
-          username: 'admin@mail.com',
-          password: 'admin',
-          status: 'ACTIVO'
-        }
+      role.save((error, role) => {
+        // console.log('ROLE: ', role)
 
-        chai.request(server)
-          .post('/user')
-          .send(user)
-          .end((error, response) => {
-            response.should.have.status(200)
-            response.body.should.be.a('object')
-            response.body.should.have.property('message').eql('Usuario creado con exito')
-            response.body.user.should.have.property('_id')
-            response.body.user.should.have.property('username')
-            response.body.user.should.have.property('password')
-            response.body.user.should.have.property('status')
-            response.body.user.should.have.property('createdAt')
-            response.body.user.should.have.property('createdBy')
-            response.body.user.should.have.property('roles')
-            response.body.user.should.have.property('profiles')
-            done()
-          })
+        user.save((error, user) => {
+          // console.log('USER: ', user)
+          chai.request(server)
+            .post('/user/' + user._id + '/role')
+            .send(role._id)
+            .end((error, response) => {
+              console.log('response: ', response);
+              response.should.have.status(200)
+              response.body.should.be.a('object')
+              response.body.should.have.property('errors')
+              response.body.errors.should.have.property('role')
+              done()
+            })
+        })
       })
     })
-    // GET /user/:userId - Obtener un usuario dado su id
+  })
+
+  // GET /user/:userId - Obtener un usuario dado su id
   describe('GET /user/:userId', () => {
       it('deberia obtener un usuario por su userId', done => {
         let user = new User({
@@ -240,7 +277,6 @@ describe('Pruebas de Usuarios', () => {
         .post('/login')
         .send(credentials)
         .end((error, response) => {
-          // console.log('RESPONSE2', response)
           response.should.have.status(200)
           response.body.should.be.a('object')
           response.body.should.have.property('message').eql('Usuario autenticado con exito')
