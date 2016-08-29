@@ -1,0 +1,70 @@
+function addRole(request, response) {
+  // console.log('request: ', request)
+
+  function respondUpdated(response, user) {
+    response.json({
+      message: 'Rol añadido con exito',
+      user
+    })
+  }
+
+  function respondError(response, error) {
+    // console.log('ERROR ROLE ID: ', error);
+    response.send(error)
+  }
+
+  function assignRole(response, user, role) {
+
+    if (role) {
+      console.log('ROLE: ', role);
+
+      let includes = user.roles.map(x => x.toString()).includes(role._id.toString())
+      if (!includes) {
+        user.roles.push(role._id)
+
+        Object
+          .assign(user, request.body)
+          .save()
+          .then(user => respondUpdated(response, user))
+          .catch(error => respondError(response, error))
+      } else {
+        console.log('NO ROLE: ');
+        response.json({
+          message: 'El rol ya se encuentra asociado al usuario',
+          user
+        })
+      }
+    } else {
+      response.json({
+        message: 'No es un rol valido',
+        user
+      })
+    }
+  }
+
+  function findRole(response, user) {
+
+    console.log('1ROLEID: ', request.body.roleId)
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      console.log('ES UN ROL VALIDO')
+      Role.findById({
+          _id: request.body.roleId
+        })
+        .then(role => assignRole(response, user, role))
+        .catch(error => respondError(response, error))
+    } else {
+      console.log('NO ES UN ROL VALIDO')
+      error = {
+        message: 'No es un rol valido',
+        user
+      }
+      respondError(response, error)
+    }
+  }
+
+  User.findById({
+      _id: request.params.userId
+    })
+    .then(user => findRole(response, user))
+    .catch(error => respondError(response, error))
+}

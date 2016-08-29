@@ -1,0 +1,70 @@
+  describe('POST /user/:userId/role', () => {
+    it('no deberia asignar un rol vacio o indefinido', done => {
+      let user = new User({
+        username: 'admin@mail.com',
+        password: 'admin',
+        status: 'ACTIVO'
+      })
+
+      user.save((error, user) => {
+        chai.request(server)
+          .post('/user/'+ user._id + '/role')
+          .send({roleId: ''})
+          .end((error, response) => {
+            console.log('response: ', response.status, response.body);
+            console.log('ROLE::', role, ' USER', user);
+            response.should.have.status(200)
+            response.body.should.be.a('object')
+            // response.body.should.have.property('message').eql('El rol ya se encuentra asociado al usuario')
+            // response.body.should.have.property('user')
+            // response.body.user.should.have.property('username')
+            // response.body.user.should.have.property('password')
+            // response.body.user.should.have.property('status')
+            // response.body.user.should.have.property('createdBy')
+            // response.body.user.should.have.property('createdAt')
+            // response.body.user.should.have.property('profiles')
+            // response.body.user.should.have.property('roles')
+            done()
+          })
+      })
+    })
+  })
+
+  describe('POST /user/:userId/role', () => {
+    it('deberia asignar un rol a un usuario', done => {
+      let user = new User({
+        username: 'admin@mail.com',
+        password: 'admin',
+        status: 'ACTIVO'
+      })
+
+      let role = new Role({
+        name: 'admin_role',
+        description: 'El usuario tiene permisos de administrador',
+        status: 'ACTIVO'
+      })
+
+      role.save((error, role) => {
+
+        user.save((error, user) => {
+          chai.request(server)
+            .post('/user/'+ user._id +'/role')
+            .send({roleId: role._id})
+            .end((error, response) => {
+              response.should.have.status(200)
+              response.body.should.be.a('object')
+              response.body.should.have.property('message').eql('Rol añadido con exito')
+              response.body.should.have.property('user')
+              response.body.user.should.have.property('username')
+              response.body.user.should.have.property('password')
+              response.body.user.should.have.property('status')
+              response.body.user.should.have.property('createdBy')
+              response.body.user.should.have.property('createdAt')
+              response.body.user.should.have.property('profiles')
+              response.body.user.should.have.property('roles')
+              done()
+            })
+        })
+      })
+    })
+  })
