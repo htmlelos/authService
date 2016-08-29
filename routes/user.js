@@ -13,8 +13,11 @@ router.route('/user/:userId')
   .delete(user.deleteUser)
   .put(user.updateUser)
 
+router.route('/user/:userId/roles')
+  .get(user.getRoles)
+
 router.route('/user/:userId/role')
-  .post(user.addRole)
+   .post(user.addRole)
 
 router.route('/login')
   .post(user.login)

@@ -1,0 +1,94 @@
+user
+57a789abebaac4d012265af6
+
+role
+57b9a7b446c74f540ce99cad
+57c33f21a4283734034f90db
+
+
+
+	function respondOk(response, user) {
+		response.json({
+			message: 'Rol asociado con exito',
+			user
+		})
+	}
+
+  function respondErrorRole(response, error, role) {
+    console.log('NO ENCONTRO EL ROL :(', role)
+		response.send(error)
+	}
+
+  // function respondError(response, error) {
+  //   console.log('ALGO FALLO CON EL USUARIO')
+	// 	response.send(error)
+	// }
+
+  function respondUserUpdated(response, user, role) {
+    console.log('ENCONTRO EL ROL?')
+    // if (role) {
+    //   user.roles.push(roleId)
+		// 	console.log('ASIGNANDO EL USUARIO')
+    //   Object.assign(user, request.body)
+    //   .save()
+    //   .then(user => respondOk(response, user))
+    //   .catch(error => respondError(response, error))
+    // } else {
+    //   let error = {
+    //     errors: {
+    //       message: 'El rol no existe',
+    //       user
+    //     }
+    //   }
+		//
+    //   response.status(422).json(error)
+    // }
+  }
+
+	function respondAddRole(response, user) {
+		let roleId = request.body.roleId
+
+		console.log('USER: ', user, ' ROLEID: ', roleId)
+		if(typeof roleId === 'undefined' || roleId === null || roleId === '') {
+			let error = {
+				errors: {
+					message: 'El rol no es valido',
+					user
+				}
+			}
+			response.status(422).json(error)
+		} else {
+			// console.log('1ROLEID: ', roleId)
+			// Verifico si el rol ya se encuentra incluido en los roles del usuario
+			// console.log('2ROLES: ', user.roles)
+			let includes = user.roles
+				.map(x => x.toString())
+				.includes(roleId)
+
+			// console.log('INCLUYE: ', includes);
+			if(!includes) {
+        console.log('BUSCANDO EL ROL:', roleId)
+        // Verifico si el rol, es un rol definido
+        Role.findById({
+          _id: mongoose.Type.ObjectId(roleId)
+        })
+        .then(role => respondUserUpdated(response, user, role))
+        .catch(error => respondErrorRole(response, error, role))
+			} else {
+				// console.log('VOY A FALLAR!!')
+				let error = {
+					errors: {
+						message: 'Rol previamente asociado',
+						user
+					}
+				}
+				response.status(422).json(error)
+			}
+		}
+	}
+
+	User.findById({
+			_id: request.params.userId
+		})
+		.then(user => respondAddRole(response, user))
+		.catch(error => respondError(response, error))
